@@ -2,7 +2,8 @@ import geopandas as gpd
 from shapely.geometry import Point
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from geopy.geocoders import Nominatim
+# --- CHANGE 1: Import ArcGIS instead of Nominatim ---
+from geopy.geocoders import ArcGIS
 from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
 
 # --- Configuration ---
@@ -25,10 +26,9 @@ except Exception as e:
     print(f"Error loading GeoJSON: {e}")
     gdf = None
 
-# Initialize a geocoder.
-# Nominatim is free but has strict rate limits and is not for heavy commercial use.
-# For a production app, consider Mapbox, Google Maps, or another provider.
-geolocator = Nominatim(user_agent="fire_district_locator")
+# --- CHANGE 2: Initialize the ArcGIS geocoder ---
+# It's more stable and doesn't have the same strict rate limits as Nominatim.
+geolocator = ArcGIS(user_agent="fire_district_locator", timeout=10)
 
 # --- Helper Function ---
 
@@ -77,7 +77,8 @@ def check_address():
     
     try:
         # 1. Geocode the address
-        location = geolocator.geocode(address)
+        # Add timeout to the call as well for extra safety.
+        location = geolocator.geocode(address, timeout=10)
         
         if location:
             lat, lon = location.latitude, location.longitude
@@ -101,7 +102,8 @@ def check_address():
             }), 404
             
     except (GeocoderTimedOut, GeocoderUnavailable) as e:
-        print(f"Geocoding error: {e}")
+        # Log the specific error to the console
+        print(f"Geocoding service error: {e}")
         return jsonify({'error': 'Geocoding service is unavailable. Please try again later.'}), 503
     except Exception as e:
         print(f"An error occurred: {e}")
