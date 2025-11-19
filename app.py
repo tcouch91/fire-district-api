@@ -93,7 +93,7 @@ def check_address():
             return jsonify({
                 'found': True,
                 'address': address,
-                'geocoded_address': geocoded_address
+                'geocoded_address': geocoded_address,
                 'latitude': lat,
                 'longitude': lon,
                 'district': district_name
