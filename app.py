@@ -89,10 +89,13 @@ def check_address():
             lat, lon = location.latitude, location.longitude
             
             district_name = find_district(lat, lon)
+
+            geocoded_address = location.address
             
             return jsonify({
                 'found': True,
                 'address': address,
+                'geocoded_address': geocoded_address,
                 'latitude': lat,
                 'longitude': lon,
                 'district': district_name
