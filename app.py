@@ -27,7 +27,7 @@ deparments = {'Bethany':'Bethany-Santiago Fire Dept',
             'York':'York Fire Dept'}
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://riverviewfire.org","http://127.0.0.1:5500"])
 
 print("Loading GeoJSON data...")
 try:
